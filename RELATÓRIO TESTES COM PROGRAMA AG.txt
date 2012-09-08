@@ -18,7 +18,7 @@ Critério para escolhas dos atributos para a próxima fase: dois melhores atribu
 
 FASE 1:
 
-Testes com o tamanho da população:
+Testes com o tamanho da população e tamanho de cromossomo (mínimo):
 	=> Sem impacto nenhum nos valores das variáveis e função, além do tempo de processamento. Indica que o tamanho da população ideal esteja próximo de 12, pois necessita de um esforço computacional menor (Número de evoluções);
 
 FASE 2:

@@ -16,9 +16,9 @@
 #define TAMPOP 24     //Tamanho da População
 #define TAMCROM 16    //Tamanho do Cromossomo
 #define TAMCADEIA 32 //Tamanho da Cadeia de Cromossomos
-#define NUMEVOL 151   //Número de Evoluções
+#define NUMEVOL 652   //Número de Evoluções
 #define TXCO 0.8     //Taxa de Crossover
-#define TXMT 0.3    //Taxa de Mutação
+#define TXMT 0.1    //Taxa de Mutação
 #define TOTCOR 1    //Total de corridas a ser realizada no programa
 
 //Funções Utilizadas
