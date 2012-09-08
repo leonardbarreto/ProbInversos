@@ -1,0 +1,31 @@
+RELATÓRIO TESTES COM PROGRAMA AG.c
+
+FUNÇÃO 2:
+intervalo [-2..1.5]
+amplitude do intervalo: 35
+Precisão requerida: 1 casa decimal
+Tamanho MÍNIMO do cromossomo: 6 
+Assumindo que o tamanho da CADEIA é a multiplicação do tamanho do cromossomo pelo número de variáveis do problema:
+
+=> Observar comportamento:
+	1) Tamanho da população
+	2) Tamanho do cromossomo
+	3) Taxa crossover
+	4) Taxa mutação
+O Número de evoluções inicialmente foi de 20000. A cada execução percebeu-se que após determinada iteração os valores não se alteraram. Logo o número que está na planilha é o número ótimo.
+O Número de corridas foi irrelevante.
+Critério para escolhas dos atributos para a próxima fase: dois melhores atributos em função da precisão e do número de evoluções(esforço computacional), nesta ordem.
+
+FASE 1:
+
+Testes com o tamanho da população:
+	=> Sem impacto nenhum nos valores das variáveis e função, além do tempo de processamento. Indica que o tamanho da população ideal esteja próximo de 12, pois necessita de um esforço computacional menor (Número de evoluções);
+
+FASE 2:
+	=>Atributos escolhidos: Tamanho da população 24 e tamanho do cromossomo 16.
+FASE 3:
+	=>Atributos escolhidos: Taxa de crossover 0,8 em função do tempo de execução (menor), pois o tamanho do crossover 0,5 ficou empatado em termos de precisão.
+FASE 4:
+	=>Atributos escolhidos: se for precisão (somente da variável x1) a taxa de mutação 0,2, caso contrário 0,3 pelo tempo de execução. Ambas variáveis possuem o mesmo valor para o f(x).
+
+O teste 13 foi o que apresentou melhores resultados.
