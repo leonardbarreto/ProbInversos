@@ -1,6 +1,18 @@
-gcc GA.c -lm -O2
-for (( i=0 ; i<=10 ; i++ ))
+#cria arquivo vazio
+>relatorio.txt
+for tamPop in 6 7
 do
-	echo "Iteração $i: "
-	/usr/bin/time -a -o tmp ./a.out
+	for tamCromo in 12
+	do
+		let tamCadeia=$tamCromo+$tamCromo
+		for taxaCromo in 0.4
+		do
+			for taxaMut in 0.01
+			do
+				echo "Iteração [$tamPop,$tamCromo,$tamCadeia,$taxaCromo,$taxaMut]: " >>relatorio.txt
+				#/usr/bin/time -a -o tmp ./a.out $tamPop $tamCromo $tamCadeia $taxaCromo $taxaMut
+				./a.out $tamPop $tamCromo $tamCadeia $taxaCromo $taxaMut
+			done
+		done
+	done
 done

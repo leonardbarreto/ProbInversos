@@ -11,65 +11,68 @@
 #include <math.h>
 #include <time.h>
 
-//Variáveis Globais
-#define QTDVAR 2     //Numero de Variáveis do problema
-#define TAMPOP 6     //Tamanho da População
+//VariÃ¡veis Globais
+#define QTDVAR 2     //Numero de VariÃ¡veis do problema
+#define TAMPOP 24     //Tamanho da PopulaÃ§Ã£o
 #define TAMCROM 7    //Tamanho do Cromossomo
 #define TAMCADEIA 14 //Tamanho da Cadeia de Cromossomos
-#define NUMEVOL 20000   //Número de Evoluções
+#define NUMEVOL 100000   //NÃºmero de EvoluÃ§Ãµes
 #define TXCO 0.8     //Taxa de Crossover
-#define TXMT 0.01    //Taxa de Mutação
+#define TXMT 0.4    //Taxa de MutaÃ§Ã£o
 #define TOTCOR 1    //Total de corridas a ser realizada no programa
 
-//Funções Utilizadas
-double Fitness(double, double);                                                    //Função Objetivo
-void PopulacaoReal(double [][TAMCADEIA], double [][QTDVAR], double [], double []); //Função Cromossomo Real
-void AptAdm(double []);                                                            //Função de Aptidão
-int Roleta(double []);                                                             //Função Roleta
-double Mutacao(double);                                                            //Função Mutação
+//FunÃ§Ãµes Utilizadas
+double Fitness(double, double);                                                    //FunÃ§Ã£o Objetivo
+void PopulacaoReal(double [][TAMCADEIA], double [][QTDVAR], double [], double []); //FunÃ§Ã£o Cromossomo Real
+void AptAdm(double []);                                                            //FunÃ§Ã£o de AptidÃ£o
+int Roleta(double []);                                                             //FunÃ§Ã£o Roleta
+double Mutacao(double);                                                            //FunÃ§Ã£o MutaÃ§Ã£o
 int Best(double []);                                                               //Funcao Best
 
 //======================================================Programa Principal=====================================================================//
 int main(){
-   int ciclo, i, j, n, aux, exp, selecao, inicio, comp, fim, MT, melhor, melhor1, corrida;
-   double Populacao[TAMPOP][TAMCADEIA], ProxGer[TAMPOP][TAMCADEIA], PopReal[TAMPOP][QTDVAR];
-   double min[QTDVAR], max[QTDVAR], Apt[TAMPOP], f1[TAMCADEIA], f2[TAMCADEIA], solucao[TAMCADEIA];
-   double soma, aleatorio, x1, x2;
+  int ciclo, i, j, n, aux, exp, selecao, inicio, comp, fim, MT, melhor, melhor1, corrida,melhorCiclo;
+  double Populacao[TAMPOP][TAMCADEIA], ProxGer[TAMPOP][TAMCADEIA], PopReal[TAMPOP][QTDVAR];
+  double min[QTDVAR], max[QTDVAR], Apt[TAMPOP], f1[TAMCADEIA], f2[TAMCADEIA], solucao[TAMCADEIA];
+  double soma, aleatorio, x1, x2,fit;
 
-//Gerando números aleatórios
-//Utiliza o relógio do computador
+/*Atribuindo valores passados ao programa para as variÃ¡veis*/
+//Gerando nÃºmeros aleatÃ³rios
+//Utiliza o relÃ³gio do computador
 //   srand((unsigned)time(NULL));
 
-//Especifica qual semente será utilizada para gerar os números aleatórios
+//Especifica qual semente serÃ¡ utilizada para gerar os nÃºmeros aleatÃ³rios
    unsigned semente = 1;
    srand(semente);
 
-//Permite ao usiário digitar uma semente para gerar os números aleatórios
+//Permite ao usiÃ¡rio digitar uma semente para gerar os nÃºmeros aleatÃ³rios
 //   unsigned semente;
 //   printf("Entre com a semente: ");
 //   scanf ("%u", &semente);
 //   srand(semente);
 
-//--------------------------------------------------------Intervalo de busca das funções-------------------------------------------------------//
-   min[0] = -2.; //Valor minimo do intervalo de busca de x1.
-   max[0] =  1.5; //Valor maximo do intervalo de busca de x1.
-   min[1] = -0.5; //Valor minimo do intervalo de busca de x2.
-   max[1] =  3.; //Valor maximo do intervalo de busca de x1.
+//--------------------------------------------------------Intervalo de busca das funÃ§Ãµes-------------------------------------------------------//
+   min[0] = -5.12; //Valor minimo do intervalo de busca de x1.
+   max[0] =  5.12; //Valor maximo do intervalo de busca de x1.
+   min[1] = -5.12; //Valor minimo do intervalo de busca de x2.
+   max[1] =  5.12; //Valor maximo do intervalo de busca de x1.
 //---------------------------------------------------------------------Fim---------------------------------------------------------------------//
 
-   FILE *arquivo;
+   FILE *arquivo,*arq;
    arquivo=fopen("GA.txt","w"); //Abrindo o arquivo para gravar os resultados
+   arq=fopen("GAresult.txt","a");
 
-   clock_t tInicio, tFim, tDecorrido; //Calculando o tempo de execução do programa
+printf("*\n");
+   clock_t tInicio, tFim, tDecorrido; //Calculando o tempo de execuÃ§Ã£o do programa
    tInicio=clock();
-
+  fit=0.0; //pega o valor da funÃ§Ã£o objetivo inicial para fins de comparaÃ§Ã£o
    for(corrida = 1; corrida <= TOTCOR; corrida++){ //Numero de corridas realizadas pelo programa
 
 //---------------------------------------------------------Gerando a populacao inicial---------------------------------------------------------//
 //   printf("Populacao Inicial:\n");
    for(i = 0; i < TAMPOP; i++){ //Gerando os elementos da matriz de cromossomos.
       for(j = 0; j < TAMCADEIA; j++){
-         Populacao[i][j] = (double)(0 + rand() % 2); //Números aleatórios entre [0, 1]
+         Populacao[i][j] = (double)(0 + rand() % 2); //NÃºmeros aleatÃ³rios entre [0, 1]
 //         printf("%.f ", Populacao[i][j]);
       }
 //      printf("\n");
@@ -99,35 +102,33 @@ int main(){
    melhor = Best(Apt);
    melhor1 = melhor;
    for(i = 0; i < TAMCADEIA; i++){
-      solucao[i]=Populacao[melhor1][i]; //Solução na forma binária.
+      solucao[i]=Populacao[melhor1][i]; //SoluÃ§Ã£o na forma binÃ¡ria.
    }
-   x1 = PopReal[melhor1][0]; //Guarda a melhor solução do primeiro cromossomo em formato real.
-   x2 = PopReal[melhor1][1]; //Guarda a melhor solução do segundo cromossomo em formato real.
+   x1 = PopReal[melhor1][0]; //Guarda a melhor soluÃ§Ã£o do primeiro cromossomo em formato real.
+   x2 = PopReal[melhor1][1]; //Guarda a melhor soluÃ§Ã£o do segundo cromossomo em formato real.
+   /*MEU COMENTÃRIO NAS DUAS LINHAS SEGUINTES
    fprintf(arquivo,"Melhor da Populacao Inicial:\n");
-   fprintf(arquivo,"%10.6f %10.6f %10.6f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor solução até o momento.
-//   printf("\nMelhor solucao da Populacao Inicial:\n");
-//   printf("%7.4f %7.4f %7.4f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor solução até o momento.
+   fprintf(arquivo,"%10.6f %10.6f %10.6f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor soluÃ§Ã£o atÃ© o momento.
+//   printf("\nMelhor solucao da Populacao Inicial:\n");*/
+//   printf("%7.4f %7.4f %7.4f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor soluÃ§Ã£o atÃ© o momento.
 
 //----------------------------------------------------------------Fim--------------------------------------------------------------------------//
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Evolucoes+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-//Ciclo de evolução da técnica: evolução, crossover e mutação
-   fprintf(arquivo,"\nEvolucoes:\n");
+//Ciclo de evoluÃ§Ã£o da tÃ©cnica: evoluÃ§Ã£o, crossover e mutaÃ§Ã£o
+ /* COMENTEI  fprintf(arquivo,"\nEvolucoes:\n"); */
 //   printf("\nCromossomos selecionados:\n");
    ciclo = 1;
+
    while(ciclo <= NUMEVOL){
       for(j = 0; j < TAMCADEIA; j++){
-         ProxGer[0][j] = solucao[j]; //Pego minha melhor solução da População
-//         printf("%.f ", ProxGer[0][j]);
+         ProxGer[0][j] = solucao[j]; //Pego minha melhor soluÃ§Ã£o da PopulaÃ§Ã£o
       }
-//      printf("\n");
       for(i = 1; i < TAMPOP; i++){
          selecao = Roleta(Apt);
          for(j = 0; j < TAMCADEIA; j++){
-            ProxGer[i][j] = Populacao[selecao][j]; //Cromossomo selecionado na População.
-//            printf("%.f ", ProxGer[i][j]);
+            ProxGer[i][j] = Populacao[selecao][j]; //Cromossomo selecionado na PopulaÃ§Ã£o.
          }
-//         printf("\n");
       }
 
 //----------------------------------------------------------------Reproduzir-------------------------------------------------------------------//
@@ -182,7 +183,7 @@ int main(){
 
 //---------------------------------------------------------Calculando o melhor cromossomo------------------------------------------------------//
     melhor = Best(Apt);
-    if(Fitness(PopReal[melhor][0], PopReal[melhor][1]) < Fitness(x1, x2)){ //Avalia se a melhor solução da geração é melhor
+    if(Fitness(PopReal[melhor][0], PopReal[melhor][1]) < Fitness(x1, x2)){ //Avalia se a melhor soluÃ§Ã£o da geraÃ§Ã£o Ã© melhor
        melhor1 = melhor;                                                   //que a guardadae a atualiza caso isso ocorra.
        for(i = 0; i < TAMCADEIA; i++){
           solucao[i] = Populacao[melhor1][i];
@@ -190,8 +191,16 @@ int main(){
        x1 = PopReal[melhor1][0];
        x2 = PopReal[melhor1][1];
     }
-    fprintf(arquivo,"%10.6f %10.6f %10.6f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor solução até o momento.
-//    fprintf(arquivo,"%10.6f\n", Fitness(x1, x2)); //Imprime a melhor solução até o momento.
+    fprintf(arquivo,"%10.6f %10.6f %10.6f\n", x1, x2, Fitness(x1, x2)); //Imprime a melhor soluÃ§Ã£o atÃ© o momento.
+    /*Guardar a Ãºltima iteraÃ§Ã£o em que ocorreu mudanÃ§a em x1 ou x2*/
+    if (fit!=Fitness(x1,x2)){
+      //printf("%.6f\t%6f\n",fit,Fitness(x1,x2));
+      fit=Fitness(x1,x2);
+      melhorCiclo=ciclo;
+      tFim = clock(); //Finalizando e imprimindo o tempo de gasto para executar o programa
+    }
+
+    //fprintf(arquivo,"%10.6f\n", Fitness(x1, x2)); //Imprime a melhor soluÃ§Ã£o atÃ© o momento.
 //-------------------------------------------------------------------Fim-----------------------------------------------------------------------//
 
     ciclo++;
@@ -199,14 +208,18 @@ int main(){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Fim das Evolucoes++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
 //Imprimindo o resultado final.
-    fprintf(arquivo,"\nResultado Final:\n");
-    fprintf(arquivo,"%10.6f %10.6f %10.6f\n", x1, x2, Fitness(x1, x2));
+    //fprintf(arquivo,"\nResultado Final:\n");
+    /*MEU COMENTÃRIO NA PRÃ“XIMA LINHA
+    fprintf(arquivo,"%10.6f %10.6f %10.6f %5d\n", x1, x2, Fitness(x1, x2),melhorCiclo);
+    */
 }//-----------------------------------------------------Fim do Numero de corridas--------------------------------------------------------------//
 
-tFim = clock(); //Finalizando e imprimindo o tempo de gasto para executar o programa
-fprintf(arquivo,"\nTempo de execucao: %ld milisegundos.\n",tDecorrido = ((tFim - tInicio) / (CLOCKS_PER_SEC/1000)));
-
+//tFim = clock(); //Finalizando e imprimindo o tempo de gasto para executar o programa
+/*imprimir para padrao do relatÃ³rio TAMPOP TAM_CROMOSSOMO TAM_CADEIA N_EVOLUÃ‡AO TAXA_CROSS TAXA_MUT X1 X2 FUNCAO TEMPO*/
+fprintf(arq,"%2d %4d %4d %8d %2.3f %2.3f %10.6f %10.6f %10.6f %ld\n", TAMPOP,TAMCROM,TAMCADEIA, melhorCiclo,TXCO,TXMT,x1, x2, fit,tDecorrido = ((tFim - tInicio) / (CLOCKS_PER_SEC/1000)));
+//fprintf(arquivo,"\nTempo de execucao: %ld milisegundos.\n",tDecorrido = ((tFim - tInicio) / (CLOCKS_PER_SEC/1000)));
 fclose(arquivo); //Fechando o arquivo onde os dados foram gravados
+fclose(arq);
 //getchar();
 return (0);
 }
@@ -219,8 +232,8 @@ double Fitness(double x1, double x2){
    //f = pow(x1, 2) + pow(x2, 2); //Exemplo
    //f = -(sum(fabs(x))*exp(-sum(x**2)))
    //f = -((fabs(x1)+fabs(x2))*exp(-(pow(x1,2)+pow(x2,2))));
-   //f = ((x1-1)*(x1-1))+((x2-1)*(x2-1))-x1*x2;  //Função 1 do trabalho
-   f = (x1*x1)+(3*(x2*x2))-2*x1+2*x2; //Função 2 do trabalho
+   f = ((x1-1)*(x1-1))+((x2-1)*(x2-1))-x1*x2;  //FunÃ§Ã£o 1 do trabalho
+   //f = (x1*x1)+(3*(x2*x2))-2*x1+2*x2; //FunÃ§Ã£o 2 do trabalho
    return (f);
 }
 //=============================================================================================================================================//
@@ -233,7 +246,7 @@ void PopulacaoReal(double Populacao[][TAMCADEIA], double PopReal [][QTDVAR], dou
 
    for(i = 0; i < TAMPOP; i++){ //Convertendo os cromossomos binarios da populacao em cromossomos reais.
       aux = 0;
-      for(n = 0; n < TAMCADEIA; n += TAMCROM){ //Transformando as variáveis binarias em reais.
+      for(n = 0; n < TAMCADEIA; n += TAMCROM){ //Transformando as variÃ¡veis binarias em reais.
          exp = TAMCROM;
          soma = 0;
          for(j = n; j < (n + TAMCROM); j++){
@@ -242,7 +255,7 @@ void PopulacaoReal(double Populacao[][TAMCADEIA], double PopReal [][QTDVAR], dou
          }
          PopReal[i][aux] = min[aux] + ((max[aux] - min[aux]) / (pow(2, TAMCROM) - 1)) * soma; //Gerando a nova matriz com numeros reais.
          aux++;
-      } //Fim (Transformando as variáveis binarias em reais).
+      } //Fim (Transformando as variÃ¡veis binarias em reais).
    } //Fim (Convertendo os cromossomos binarios da populacao em cromossomos reais).
 }
 //=============================================================================================================================================//
@@ -254,8 +267,8 @@ void AptAdm(double Apt[]){
    double somainvertperc=0, somaperc=0, somaapt=0, menor, maior, comp, somainvert=0;
 
 /*
-//Aptidão calculada por meio do inverso do valor da função objetivo (1 / f(x1, x2));
-   for(i = 0; i < TAMPOP; i++){ //Calculando as aptidões invertidas.
+//AptidÃ£o calculada por meio do inverso do valor da funÃ§Ã£o objetivo (1 / f(x1, x2));
+   for(i = 0; i < TAMPOP; i++){ //Calculando as aptidÃµes invertidas.
       Apt[i] = 1.0 / Apt[i];
       somaapt += Apt[i];
    }
@@ -265,7 +278,7 @@ void AptAdm(double Apt[]){
    }
 */
 
-//Aptidão calculada levando-se em conta o menor e o maior valor da função objetivo.
+//AptidÃ£o calculada levando-se em conta o menor e o maior valor da funÃ§Ã£o objetivo.
    menor = -Apt[0];
    maior = -Apt[0];
    for(i = 1; i < TAMPOP; i++){ //Define a menor e a maior aptidao.
